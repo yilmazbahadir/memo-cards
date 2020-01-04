@@ -7,7 +7,7 @@ export const ProjectAddOrEdit = ({ id, fetchProjectById, saveProject }) => {
     //let project = fetchProjectById(id);
     const handleSubmit = () => alert('submitted!');
     const defaultFormState = {
-        email: 'bahadir@openrise.co.uk',
+        email: 'xxx@email.co.uk',
         password: '12345',
         confirmPassword: '12345'
     }
