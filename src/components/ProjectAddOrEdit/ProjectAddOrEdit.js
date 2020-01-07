@@ -1,74 +1,193 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import React, { useEffect } from "react";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
 
-export const ProjectAddOrEdit = ({ id, fetchProjectById, saveProject }) => {
+import { Formik, Form } from "formik";
+import * as yup from "yup";
 
-    //let project = fetchProjectById(id);
-    const handleSubmit = () => alert('submitted!');
-    const defaultFormState = {
-        email: 'xxx@email.co.uk',
-        password: '12345',
-        confirmPassword: '12345'
+const EditProjectSchema = yup.object().shape({
+  name: yup.string().required("This field is required."),
+  description: yup.string().required("This field is required."),
+  createdDate: yup
+    .string()
+    .required("This field is required."),
+  active: yup
+    .string()
+    .min(6, "active is too short.")
+    .max(20, "active is too long.")
+    .required("This field is required.")
+});
+
+const useStyles = makeStyles(theme => ({
+  "@global": {
+    body: {
+      backgroundColor: theme.palette.common.white
     }
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main
+  },
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(3)
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2)
+  }
+}));
 
-    return (
+export const ProjectAddOrEdit = ({ id, fetchProjectById, project = {} }) => {
+    const edit = id > 0;
+
+    const title = edit ? 'Edit Project' : 'Create Project'
+
+    const classes = useStyles();
+
+    useEffect(() => {
+      async function fetchData() {
+        await fetchProjectById(id);
+      };
+      fetchData();
+    }, [fetchProjectById, id]);
+
+    
+    const onSubmit = () => {
+        alert(`edit:${edit}`);
+        if (edit) {
+            // call edit api
+        } // else create api
+    }
+    
+  return (
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Typography component="h1" variant="h5">
+          {title}
+        </Typography>
         <Formik
-            onSubmit={handleSubmit}
-            initialValues={defaultFormState}
+          initialValues={{
+            ...project,
+            name: 'baha'
+          }}
+          validationSchema={EditProjectSchema}
+          onSubmit={onSubmit}
         >
-            {() => (
-                <Form>
-                    <Field
-                        name="email"
-                        type="email"
-                        placeholder="Email"
-                    />
-                    <ErrorMessage
-                        name="email"
-                        component="div"
-                    />
-                    <Field
-                        name="password"
-                        type="password"
-                        placeholder="Password"
-                    />
-                    <ErrorMessage
-                        name="password"
-                        component="div"
-                    />
-                    <Field
-                        name="confirmPassword"
-                        type="password"
-                        placeholder="Confirm password"
-                    />
-                    <ErrorMessage
-                        name="confirmPassword"
-                        component="div"
-                    />
-                    <button>
-                        Submit
-                    </button>
-                </Form>
-            )}
+          {({ errors, handleChange, touched }) => (
+            <Form className={classes.form}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    error={errors.name && touched.name}
+                    autoComplete="pname"
+                    name="name"
+                    variant="outlined"
+                    fullWidth
+                    onChange={handleChange}
+                    id="name"
+                    label="Project Name"
+                    autoFocus
+                    helperText={
+                      errors.name && touched.name
+                        ? errors.name
+                        : null
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    error={errors.description && touched.description}
+                    variant="outlined"
+                    fullWidth
+                    onChange={handleChange}
+                    id="description"
+                    label="Description"
+                    name="description"
+                    autoComplete="lname"
+                    helperText={
+                      errors.description && touched.description
+                        ? errors.description
+                        : null
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    error={errors.createdDate && touched.createdDate}
+                    variant="outlined"
+                    fullWidth
+                    onChange={handleChange}
+                    id="createdDate"
+                    label="Created Date"
+                    name="createdDate"
+                    autoComplete="createdDate"
+                    helperText={
+                      errors.createdDate && touched.createdDate ? errors.createdDate : null
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    error={errors.active && touched.active}
+                    variant="outlined"
+                    fullWidth
+                    onChange={handleChange}
+                    name="active"
+                    label="Active"
+                    type="active"
+                    id="active"
+                    autoComplete="current-active"
+                    helperText={
+                      errors.active && touched.active
+                        ? errors.active
+                        : null
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    error={errors.tags && touched.tags}
+                    variant="outlined"
+                    fullWidth
+                    onChange={handleChange}
+                    name="tags"
+                    label="Tags"
+                    type="tags"
+                    id="tags"
+                    autoComplete="current-tags"
+                    helperText={
+                      errors.tags && touched.tags
+                        ? errors.tags
+                        : null
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
+                Save
+              </Button>
+            </Form>
+          )}
         </Formik>
-        // <div>
-        //     <div>ID:</div><div>{id}</div>
-        //     <div>Name:</div><div>{name}</div>
-        //     <div>Description:</div><div>{description}</div>
-        //     <div>Active:</div><div>{active}</div>
-        //     <div>CreatedDate:</div><div>{createdDate}</div>
-        //     <div>Tags:</div><div>{tags}</div>
-        // </div>
-    )
-}
-
-ProjectAddOrEdit.propTypes = {
-    id: PropTypes.number,
-    name: PropTypes.string,
-    description: PropTypes.string,
-    active: PropTypes.bool,
-    createdDate: PropTypes.string,
-    tags: PropTypes.string
-}
-
+      </div>
+    </Container>
+  );
+};

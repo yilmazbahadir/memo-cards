@@ -1,33 +1,33 @@
 import {
-    PROJECTLIST_FETCH_REQUEST,
-    PROJECTLIST_FETCH_SUCCESS,
-    PROJECTLIST_FETCH_FAILURE
+    PROJECTONE_FETCH_REQUEST,
+    PROJECTONE_FETCH_SUCCESS,
+    PROJECTONE_FETCH_FAILURE
 } from '../../store/actions';
 
 const initialState = {
     fetching: true,
-    projects: {}
+    project: {}
 }
 
-export const fetchProjectListReducer = (state = initialState, action) => {
+export const fetchProjectOneReducer = (state = initialState, action) => {
 
     switch (action.type) {
-        case PROJECTLIST_FETCH_REQUEST:
+        case PROJECTONE_FETCH_REQUEST:
             return {
                 ...state,
                 fetching: true
             }
-        case PROJECTLIST_FETCH_SUCCESS:
+        case PROJECTONE_FETCH_SUCCESS:
             return {
                 ...state,
                 fetching: false,
-                projects: action.payload
+                project: action.payload
             }
-        case PROJECTLIST_FETCH_FAILURE:
+        case PROJECTONE_FETCH_FAILURE:
             return {
                 ...state,
                 fetching: false,
-                projects: action.payload
+                project: action.payload
             }
         default:
             return {

@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import Project from '../Project';
 import './ProjectList.scss';
 
-import { Grid, makeStyles, CircularProgress, withStyles } from '@material-ui/core';
+import { Grid, CircularProgress, withStyles } from '@material-ui/core';
+
 
 const styles = theme => ({
     root: {
@@ -24,18 +25,20 @@ const styles = theme => ({
 
 const ProjectList = ({ fetching, projects, fetchProjectList, classes }) => {
 
-    useEffect(() => { fetchProjectList() }, []);
+    useEffect(() => { fetchProjectList() }, [fetchProjectList]);
 
     return (
         <div className="gridContainer">
-            {fetching && <div> <CircularProgress className={classes.progress} /></div>}
+            {fetching && <div><CircularProgress className={classes.progress} /></div>}
             <Grid container spacing={1} className={classes.root}>
                 {!fetching && projects.length > 0 && projects.map(t => (
                     <Grid item xs={4} spacing={3}>
                         <Project key={t.id} {...t} />
                     </Grid>
                 ))}
-
+                <Grid item xs={4} spacing={3}>
+                    <Project key={0} />
+                </Grid>
             </Grid>
         </div>
 
@@ -45,5 +48,6 @@ const ProjectList = ({ fetching, projects, fetchProjectList, classes }) => {
 export default withStyles(styles)(ProjectList);
 
 Project.propTypes = {
-    projects: PropTypes.object
+    projects: PropTypes.object,
+    fetchProjectList: PropTypes.func
 }
