@@ -1,75 +1,86 @@
-import React, { useEffect } from "react";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
+import React, { useEffect } from 'react';
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import { MemoButton } from '../Core';
 
-import { Formik, Form } from "formik";
-import * as yup from "yup";
+import { Formik, Form } from 'formik';
+import * as yup from 'yup';
 
 const EditProjectSchema = yup.object().shape({
-  name: yup.string().required("This field is required."),
-  description: yup.string().required("This field is required."),
-  createdDate: yup
-    .string()
-    .required("This field is required."),
+  name: yup.string().required('This field is required.'),
+  description: yup.string().required('This field is required.'),
+  createdDate: yup.string().required('This field is required.'),
   active: yup
     .string()
-    .min(6, "active is too short.")
-    .max(20, "active is too long.")
-    .required("This field is required.")
+    .min(6, 'active is too short.')
+    .max(20, 'active is too long.')
+    .required('This field is required.'),
 });
 
-const useStyles = makeStyles(theme => ({
-  "@global": {
+const useStyles = makeStyles((theme) => ({
+  '@global': {
     body: {
-      backgroundColor: theme.palette.common.white
-    }
+      backgroundColor: theme.palette.common.white,
+    },
   },
   paper: {
     marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(3)
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(3),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
-export const ProjectAddOrEdit = ({ id, fetchProjectById, project = {} }) => {
-    const edit = id > 0;
+export const ProjectAddOrEdit = ({
+  id,
+  fetchProjectById,
+  createProject,
+  updateProject,
+  onSave,
+  ...props
+}) => {
+  const edit = id;
 
-    const title = edit ? 'Edit Project' : 'Create Project'
+  const { project, updating } = props;
 
-    const classes = useStyles();
+  const title = edit ? 'Edit Project' : 'Create Project';
 
-    useEffect(() => {
-      async function fetchData() {
-        await fetchProjectById(id);
-      };
-      fetchData();
-    }, [fetchProjectById, id]);
+  const classes = useStyles();
 
-    
-    const onSubmit = () => {
-        alert(`edit:${edit}`);
-        if (edit) {
-            // call edit api
-        } // else create api
+  useEffect(() => {
+    if (edit) {
+      fetchProjectById(id);
     }
-    
+  }, [edit, fetchProjectById, id]);
+
+  const onSubmit = (
+    values,
+    { setSubmitting, setErrors, setStatus, resetForm }
+  ) => {
+    if (edit) {
+      updateProject(values);
+    } else {
+      createProject(values);
+    }
+    resetForm();
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -78,14 +89,12 @@ export const ProjectAddOrEdit = ({ id, fetchProjectById, project = {} }) => {
           {title}
         </Typography>
         <Formik
-          initialValues={{
-            ...project,
-            name: 'baha'
-          }}
+          initialValues={project}
+          enableReinitialize
           validationSchema={EditProjectSchema}
           onSubmit={onSubmit}
         >
-          {({ errors, handleChange, touched }) => (
+          {({ values, errors, handleChange, touched }) => (
             <Form className={classes.form}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -99,10 +108,9 @@ export const ProjectAddOrEdit = ({ id, fetchProjectById, project = {} }) => {
                     id="name"
                     label="Project Name"
                     autoFocus
+                    value={values.name || ''}
                     helperText={
-                      errors.name && touched.name
-                        ? errors.name
-                        : null
+                      errors.name && touched.name ? errors.name : null
                     }
                   />
                 </Grid>
@@ -115,6 +123,7 @@ export const ProjectAddOrEdit = ({ id, fetchProjectById, project = {} }) => {
                     id="description"
                     label="Description"
                     name="description"
+                    value={values.description || ''}
                     autoComplete="lname"
                     helperText={
                       errors.description && touched.description
@@ -132,9 +141,12 @@ export const ProjectAddOrEdit = ({ id, fetchProjectById, project = {} }) => {
                     id="createdDate"
                     label="Created Date"
                     name="createdDate"
+                    value={values.createdDate || ''}
                     autoComplete="createdDate"
                     helperText={
-                      errors.createdDate && touched.createdDate ? errors.createdDate : null
+                      errors.createdDate && touched.createdDate
+                        ? errors.createdDate
+                        : null
                     }
                   />
                 </Grid>
@@ -145,14 +157,13 @@ export const ProjectAddOrEdit = ({ id, fetchProjectById, project = {} }) => {
                     fullWidth
                     onChange={handleChange}
                     name="active"
+                    value={values.active || ''}
                     label="Active"
                     type="active"
                     id="active"
                     autoComplete="current-active"
                     helperText={
-                      errors.active && touched.active
-                        ? errors.active
-                        : null
+                      errors.active && touched.active ? errors.active : null
                     }
                   />
                 </Grid>
@@ -163,27 +174,28 @@ export const ProjectAddOrEdit = ({ id, fetchProjectById, project = {} }) => {
                     fullWidth
                     onChange={handleChange}
                     name="tags"
+                    value={values.tags || ''}
                     label="Tags"
                     type="tags"
                     id="tags"
                     autoComplete="current-tags"
                     helperText={
-                      errors.tags && touched.tags
-                        ? errors.tags
-                        : null
+                      errors.tags && touched.tags ? errors.tags : null
                     }
                   />
                 </Grid>
               </Grid>
-              <Button
+              <MemoButton
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-              >
-                Save
-              </Button>
+                text="Save"
+                loadingText="Saving..."
+                loading={updating}
+                onLoadingFinished={onSave}
+              />
             </Form>
           )}
         </Formik>
