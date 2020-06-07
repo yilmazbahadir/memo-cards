@@ -7,10 +7,13 @@ import {
   CardActions,
   Typography,
   Button,
+  IconButton,
 } from '@material-ui/core';
+
 import { DeleteOutlined } from '@material-ui/icons';
 import AddIcon from '@material-ui/icons/Add';
-import { DialogForm } from './DialogForm';
+
+import { FormDialog, ConfirmDialog } from './../Core';
 
 import './Project.scss';
 import ProjectAddOrEdit from '../ProjectAddOrEdit';
@@ -59,9 +62,9 @@ export const Project = ({
   };
   return (
     <>
-      <DialogForm open={editDialogOpen} handleClose={handleClose}>
+      <FormDialog open={editDialogOpen} handleClose={handleClose}>
         <ProjectAddOrEdit id={id} onSave={handleClose} />
-      </DialogForm>
+      </FormDialog>
       {id && (
         <Card className={classes.card} key={'card_' + id}>
           <CardContent
@@ -89,15 +92,26 @@ export const Project = ({
             >
               Edit
             </Button>
-            <DialogForm open={deleteDialogOpen}>
-              <p>Do you really want to delete this project?</p>
-            </DialogForm>
-            <DeleteOutlined
-              onClick={() => {
+            <ConfirmDialog
+              open={deleteDialogOpen}
+              handleCancel={() => {
+                setDeleteDialogOpen(false);
+              }}
+              handleOK={() => {
                 deleteProject(id);
                 onChange();
               }}
-            />
+            >
+              <p>Do you really want to delete this project?</p>
+            </ConfirmDialog>
+
+            <IconButton
+              color="primary"
+              aria-label="upload picture"
+              component="span"
+            >
+              <DeleteOutlined onClick={() => setDeleteDialogOpen(true)} />
+            </IconButton>
           </CardActions>
         </Card>
       )}

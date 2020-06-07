@@ -4,12 +4,14 @@ import {
   DialogContent,
   Dialog,
   DialogActions,
+  Button,
 } from '@material-ui/core';
 
 export const ConfirmDialog = ({
-  Component,
   title,
   open,
+  handleCancel,
+  handleOK,
   handleClose,
   children,
 }) => {
@@ -23,11 +25,11 @@ export const ConfirmDialog = ({
         <DialogTitle id="form-dialog-title">{title}</DialogTitle>
         <DialogContent>{children}</DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Disagree
+          <Button onClick={handleCancel} color="primary">
+            Cancel
           </Button>
-          <Button onClick={handleClose} color="primary" autoFocus>
-            Agree
+          <Button onClick={handleOK} color="primary" autoFocus>
+            OK
           </Button>
         </DialogActions>
       </Dialog>
